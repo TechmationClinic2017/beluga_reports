@@ -1,0 +1,76 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\begin{document}
+
+\begin{center}
+{\bf \Large Beluga Step Response Protocol} \\ \smallskip
+5 February 2017 \\
+\rule{\textwidth}{1pt}
+\end{center}
+
+\section*{Purpose and Overview}
+The purpose of the step response test on the Beluga robot is to verify and tune the dynamic model for the robot.
+Data collected from the robot will be compared to the output of a simulation using the dynamic model to determine its accuracy in aid in improving the model.
+
+The tests are conducted by submerging the robot and supplying all four motors with an identical step input.
+Tests are run at 25\%, 50\%, 75\%, and 100\% of the robot's maximum thrust (determined by the safe limits of the power supply and estimated power draw).
+The tests are done in a controlled environment (swimming pool) with team members in the water to catch the robot in the case of a problem.
+
+\section*{Physical Setup}
+Start the robot at one end of the pool, above the water, with another teammate at the other end of the pool.
+Once the robot receives the step test command, the motors will start spinning in 5 seconds.
+During this time, submerge the robot by pushing it down gently below the surface.
+Allow the robot to complete its step response and then bring it to the surface so that the scripts can be stopped and the data saved.
+
+\section*{Code Operation}
+A number of scripts need to be run in order to conduct the tests and record data.
+It is recommended to use a \texttt{screen} session to manage all of the scripts under a single \texttt{ssh} connection.
+The script setup and execution works as follows:
+
+\begin{enumerate}
+\item{ \texttt{ssh} into the Beluga. 
+On the lab machine, this is aliased as the command \texttt{orca}.
+Ensure that the router is plugged in and the computer is connected to the wifi named "the-ocean"
+}
+\item{
+Start a screen session using the command \texttt{screen}.
+Control-a c opens a new screen tab and control-a [WINDOW\_NUM] switches windows.
+}
+\item{
+Start up the sensors in separate tabs with the following commands: \vspace{-15pt}
+\begin{center}
+\begin{tabular}{lll}
+IMU: & \texttt{roslaunch beluga\_ros vn100.launch port:=[PORT]} & PORT is most likely /dev/ttyUSB1 \\
+GPS: & \texttt{roslaunch beluga\_ros gps.launch port:=[PORT]} & PORT is most likely /dev/ttyUSB0 \\
+\end{tabular}
+\end{center}
+}
+\item{
+For each test, run (in this order and quickly one after the other):
+\begin{enumerate}[i.]
+\item \texttt{rosbag record -a -o [TEST\_NAME]}
+\item \texttt{roslaunch beluga\_ros ekf2.launch}
+\item \texttt{roslaunch beluga\_nav step\_test.launch top:=[POWER] bottom:=[POWER] right:=[POWER] \\ left:=[POWER] dur:=[STEP\_TIME]}
+\end{enumerate}
+All of these commands should be killed (with control-c) once the robot surfaces and be re-run for each test.
+The rosbag record should be run in the folder that will end up containing the data. \\
+Note: currently POWER should be input backward (between 0 and -1), think this is a wiring issue.
+}
+\end{enumerate}
+
+\section*{Notes}
+For a 25m pool, the following step times should work (i.e. not hit the wall):
+\begin{center}
+\begin{tabular}{ll}
+Power & Time \\ \hline
+25\% & 15s \\
+50\% & 12s \\
+75\% & 12s \\
+100\% & 10s \\
+\end{tabular}
+\end{center}
+
+
+\end{document}
