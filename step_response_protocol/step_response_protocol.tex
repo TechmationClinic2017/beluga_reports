@@ -32,11 +32,11 @@ The script setup and execution works as follows:
 \begin{enumerate}
 \item{ \texttt{ssh} into the Beluga. 
 On the lab machine, this is aliased as the command \texttt{orca}.
-Ensure that the router is plugged in and the computer is connected to the wifi named "the-ocean"
+Ensure that the router is plugged in and the computer is connected to the wifi named ``the-ocean"
 }
 \item{
 Start a screen session using the command \texttt{screen}.
-Control-a c opens a new screen tab and control-a [WINDOW\_NUM] switches windows.
+Control-A+C opens a new screen tab and control-A+[WINDOW\_NUM] switches windows.
 }
 \item{
 Start up the sensors in separate tabs with the following commands: \vspace{-15pt}
@@ -54,7 +54,7 @@ For each test, run (in this order and quickly one after the other):
 \item \texttt{roslaunch beluga\_ros ekf2.launch}
 \item \texttt{roslaunch beluga\_nav step\_test.launch top:=[POWER] bottom:=[POWER] right:=[POWER] \\ left:=[POWER] dur:=[STEP\_TIME]}
 \end{enumerate}
-All of these commands should be killed (with control-c) once the robot surfaces and be re-run for each test.
+All of these commands should be killed (with control-C) once the robot surfaces and be re-run for each test.
 The rosbag record should be run in the folder that will end up containing the data. \\
 Note: currently POWER should be input backward (between 0 and -1), think this is a wiring issue.
 }
