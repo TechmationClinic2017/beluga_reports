@@ -1,0 +1,39 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+
+\begin{center}
+\Large\bf Intel NUC Setup Instructions for the Beluga AUV
+\end{center}
+
+\section*{Installing Ubuntu}
+
+\section*{Installing ROS}
+
+\section*{Cloning the Beluga Repositories}
+There are two repositories to clone, one for the ROS workspace and one for the data and simulation.
+Clone them into the home directory:
+
+\begin{verbatim}
+cd
+git clone https://github.com/TechmationClinic2017/beluga_ws.git
+git clone https://github.com/TechmationClinic2017/BelugaSimulation.git
+\end{verbatim}
+
+The ROS repository needs to be built, but has dependencies that don't come with the standard ROS install.
+Install those with the following commands:
+
+\begin{verbatim}
+sudo apt-get install ros-indigo-robot-localization
+sudo apt-get install ros-indigo-rosserial
+\end{verbatim}
+
+Now, build the Beluga ROS workspace:
+
+\begin{verbatim}
+cd ~/beluga_ws
+catkin_make
+\end{verbatim}
+
+\end{document}
