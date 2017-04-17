@@ -1,5 +1,13 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+%block paragraphs
+\setlength{\parindent}{0pt}
+\newcommand{\todo}{ \begin{center} \large \emph{TODO} \end{center}}
+
+\newcommand{\mytilde}{\raise.17ex\hbox{$\scriptstyle\mathtt{‌​\sim}$}}
 
 \begin{document}
 
@@ -8,8 +16,45 @@
 \end{center}
 
 \section*{Installing Ubuntu}
+\todo
+
+\section*{Enable Auto-Reboot}
+By default the Intel NUC will not power on after being connected to power, and will wait for the power button to be pressed.
+We can change this in the BIOS settings.
+\begin{enumerate}[nosep]
+\item Hold F2 while the NUC is booting up to boot into the BIOS
+\item From the drop-down menu select ``Power"
+\item Change the ``After Power Failure" option to ``Power On"
+\item Hit F10 to save and exit
+\item Test the changes by powering the machine off, unplugging the power cord, and plugging it back in. The NUC should reboot
+\end{enumerate}
+
+\section*{Set Up Static-IP and SSH}
+We want the NUC to have the same IP address every time we connect to the router.
+To do this, use the instructions here: \url{https://help.ubuntu.com/stable/ubuntu-help/net-fixed-ip-address.html}.
+The IP address should be 192.168.1.[NUM], where NUM is outside the 100-149 range for the DHCP table (I used 200 for dolphin).
+Netmask should be 255.255.255.0, and the gateway should be 192.168.1.1.
+The DNS servers IP should also be 192.168.1.1.
+Reset the wifi connection for this to take effect.\\
+
+To set up SSH, use the following two commands:
+\begin{center}
+\begin{tabular}{l}
+\texttt{sudo apt-get install openssh-server} \\
+\texttt{sudo restart ssh}
+\end{tabular}
+\end{center}
+Test that this worked by opening an ssh connection from another machine using the new static IP address:
+\begin{center}
+\texttt{ssh -Y [USERNAME]@192.168.1.[NUM]}
+\end{center}
 
 \section*{Installing ROS}
+\todo
+To allow the NUC to send ROS messages over wifi, add the following line to your .zshrc/.bashrc \begin{verbatim}
+export ROS_IP=[BELUGA_STATIC_IP]} 
+(i.e. export ROS_IP=192.168.1.200)
+\end{verbatim}
 
 \section*{Cloning the Beluga Repositories}
 There are two repositories to clone, one for the ROS workspace and one for the data and simulation.
@@ -29,11 +74,86 @@ sudo apt-get install ros-indigo-robot-localization
 sudo apt-get install ros-indigo-rosserial
 \end{verbatim}
 
+Some of the scripts also need the python package scipy.
+Use pip to install:
+\begin{verbatim}
+wget https://bootstrap.pypa.io/get-pip.py
+sudo -H python get-pip.py
+sudo -H pip install scipy
+\end{verbatim}
+
 Now, build the Beluga ROS workspace:
 
 \begin{verbatim}
 cd ~/beluga_ws
 catkin_make
+\end{verbatim}
+
+Don't forget to source the correct setup file for your shell in \texttt{beluga\_ws/devel} (from your .bashrc, .zshrc, or .cshrc, depending on your shell).
+Make sure that ROS knows about the new packages by trying \texttt{roscd beluga\_main}, or by running any of the launch files.
+
+\section*{Configuring USB Ports}
+{\bf USB Permissions} \\
+The VectorNav, GPS, and battery all connect over USB.
+To be able to read from USB ports in \texttt{/dev/}, we need to add the user to the dialout group.
+Do this with the following command:
+\begin{center}
+\texttt{sudo adduser [USERNAME] dialout}
+\end{center}
+Log out and back in for this to go into effect.
+Check that this worked by making sure there is no ``Permission Denied" error on the following command:
+\begin{center}
+\texttt{cat /dev/ttyUSB0}
+\end{center}
+
+{\bf Static USB Ports} \\
+The physical USB ports are not guaranteed to map to a specific port in \texttt{/dev/}, and are instead mapped to \texttt{/dev/ttyUSB[PORT\_NUM]} in the order that they are connected.
+To get around this, we can tell the system to create symlinks in \texttt{/dev/} whenever a specific device is connected.
+To do this, we need each USB device's idProduct number, idVendor number, and serial number.
+The process is as follows:
+\begin{enumerate}[nosep]
+\item Determine which port in \texttt{/dev/} the device is connected to (easiest to just see which port gets added when the device is plugged in).
+\item Get the idProduct, idVendor, and serial numbers which the following commands (substitute your port for /dev/ttyUSB0 if using a different port)
+  \begin{itemize}[nosep]
+  \item \texttt{udevadm info -a -n /dev/ttyUSB0 | grep "idProduct" | head -n1}
+  \item \texttt{udevadm info -a -n /dev/ttyUSB0 | grep "idVendor" | head -n1}
+  \item \texttt{udevadm info -a -n /dev/ttyUSB0 | grep "serial" | head -n1}
+  \end{itemize}
+\item Create a new file in \texttt{/etc/udev/rules.d} named \texttt{99-serial-usb.rules}
+\item Add a rule as a new line in the file as follows:
+\begin{itemize}[nosep]
+\item Assuming you're adding a device with idVendor number 0403, idProduct number 6001, and serial number A103W21E (this is one of our VectorNavs), with a desired symlink to \texttt{/dev/imu}, the command is:
+\item \texttt{SUBSYSTEM=="tty", ATTRS\{idVendor\}=="0403", ATTRS\{idProduct\}=="6001",} \\
+      \texttt{ATTRS\{serial\}=="A103W21E", SYMLINK+="imu"}
+\item Change the numbers and symlink around for different devices. Each device should get one line in \texttt{99-serial-usb.rules}
+\end{itemize}
+\end{enumerate}
+
+Set this up for the VectorNav and GPS that will be used with the NUC, and test it by reconnecting the devices and checking if the symlinks show up in \texttt{/dev/}.
+I put the VectorNav on \texttt{/dev/imu} and the GPS on \texttt{/dev/gps}. \\
+
+{\bf Check that the USB ports work with the ROS repository} \\
+Once the USB ports are configured, ensure that we can publish data from those ports with the following two commands:
+\begin{center}
+\begin{tabular}{l}
+\texttt{roslaunch beluga\_nav vn100.launch port:=/dev/imu} \\
+\texttt{roslaunch beluga\_nav gps.launch port:=/dev/gps}
+\end{tabular}
+\end{center}
+There should be no errors and IMU/GPS data should begin to be published on their respective ROS topics.
+
+\section*{Configuring Startup Script}
+The startup script is located in the beluga\_ws repository at \texttt{beluga\_ws/scripts/start\_beluga}.
+It assumes the user is using zsh (change in necessary).
+To launch this file when the beluga boots, add a cronjob by typing \texttt{crontab -e} and adding the following line at the bottom of the crontab file:
+
+\begin{verbatim}
+@reboot sudo -u [USER] [PATH_TO_START_BELUGA]
+\end{verbatim}
+
+I generally like to have the start\_beluga file in \texttt{\$HOME/bin}. On dolphin, the line is:
+\begin{verbatim}
+@reboot sudo -u dolphin /home/dolphin/bin/start_beluga
 \end{verbatim}
 
 \end{document}
