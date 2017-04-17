@@ -1,0 +1,107 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[shortlabels]{enumitem}
+
+\begin{document}
+
+\begin{center}
+{\bf \Large Beluga Dana Point Test Protocol} \\ \smallskip
+21 March 2017 \\
+\rule{\textwidth}{1pt}
+\end{center}
+
+\section*{Purpose and Overview}
+The purpose of the Dana Point Experiments is to tune and validate the control system for the robot. Multiple tests will be run for the pitch, yaw, and axial velocity controllers. The results of these tests will be used to tune the PID constants. Then, some tests will be run to validate the performance of running all three controllers simulataneously.
+
+\section*{Physical Setup}
+Ensure that the robot is fully assembled and that all ports are covered. Tie paracord to the AUV as a safety measure for the field trials.
+
+Start the robot near the dock. Two teammates should be in a boat or in the water to retrieve the robot. Run the test, submerge the Beluga, and wait for the test to complete. Once the test is completed, process the resulting data. The Beluga can then either be teleoperated or pulled to the start location.
+
+\section*{Code Operation}
+A number of scripts need to be run in order to conduct the tests and record data.
+It is recommended to use a \texttt{screen} session to manage all of the scripts under a single \texttt{ssh} connection.
+The script setup and execution works as follows:
+
+\begin{enumerate}
+\item{ \texttt{ssh} into the Beluga.
+On the lab machine, this is aliased as the command \texttt{orca}.
+Ensure that the router is plugged in and the computer is connected to the wifi named ``the-ocean"
+}
+\item{
+Start a screen session using the command \texttt{screen}.
+Control-A+C opens a new screen tab and control-A+[WINDOW\_NUM] switches windows.
+}
+\item{
+Start up the sensors in separate tabs with the following commands: \vspace{-15pt}
+\begin{center}
+\begin{tabular}{lll}
+IMU: & \texttt{roslaunch beluga\_ros vn100.launch port:=[PORT]} & PORT is most likely /dev/ttyUSB1 \\
+GPS: & \texttt{roslaunch beluga\_ros gps.launch port:=[PORT]} & PORT is most likely /dev/ttyUSB0 \\
+\end{tabular}
+\end{center}
+}
+\item{
+For each test, run (in this order and quickly one after the other):
+\begin{enumerate}[i.]
+\item \texttt{rosbag record -a -o [TEST\_NAME]}
+\item \texttt{roslaunch beluga\_ros ekf2.launch}
+\item \texttt{roslaunch beluga\_nav step\_test.launch top:=[POWER] bottom:=[POWER] right:=[POWER] \\ left:=[POWER] dur:=[STEP\_TIME]}
+\end{enumerate}
+All of these commands should be killed (with control-C) once the robot surfaces and be re-run for each test.
+The rosbag record should be run in the folder that will end up containing the data. \\
+Note: currently POWER should be input backward (between 0 and -1), think this is a wiring issue.
+}
+\end{enumerate}
+
+\section*{Field Experiments}
+The following tests will be completed to validate the performance of the AUV control system in a field trial.
+
+\subsection*{Axial Velocity}
+\begin{enumerate}
+\item Input the theoretical Axial Velocity PID Constants
+\item Set up a forward velocity only test from 0 to $0.5 m/s$ in 5 seconds.
+\item Run the test and process the data
+\item Evaluate the performance of the controller and qualitatively reselect PID constants
+\item Repeat steps 2-4 until controller performance is satisfactory
+\item Repeat the axial velocity test with final constants 3 times
+\end{enumerate}
+
+
+\subsection*{Pitch}
+\begin{enumerate}
+\item Input the theoretical pitch PID Constants
+\item Set up a forward velocity only test from 0 to $45^\circ $ in 20 seconds.
+\item Run the test and process the data
+\item Evaluate the performance of the controller and qualitatively reselect PID constants
+\item Repeat steps 2-4 until controller performance is satisfactory
+\item Repeat the pitch test with final constants 3 times
+\end{enumerate}
+
+\subsection*{Yaw}
+\begin{enumerate}
+\item Input the yaw PID Constants tuned from Bernard Field Station trials
+\item Repeat the pitch test with final constants 3 times
+\end{enumerate}
+
+\subsection*{Velocity-Pitch-Yaw Hold}
+\begin{enumerate}
+\item Input the tuned velocity, pitch, yaw PID Constants
+\item Set up a test where forward velocity goes from  0 to $0.5 m/s$ in 5 seconds and holds the pitch at $0^\circ$ and yaw at a given angle.
+\item Run the test and process the data
+\item Evaluate the performance of the controller and qualitatively reselect PID constants
+\item Repeat steps 2-4 until controller performance is satisfactory
+\item Repeat the Velocity-Pitch-Yaw Hold test with final constants 3 times
+\end{enumerate}
+
+\subsection*{Velocity-Pitch-Yaw Turn}
+\begin{enumerate}
+\item Input the tuned velocity, pitch, yaw PID Constants
+\item Set up a test where forward velocity goes from  0 to $0.5 m/s$ in 5 seconds and holds the pitch at $0^\circ$ and yaw turns $180^\circ$ in 60 seconds.
+\item Run the test and process the data
+\item Evaluate the performance of the controller and qualitatively reselect PID constants
+\item Repeat steps 2-4 until controller performance is satisfactory
+\item Repeat the Velocity-Pitch-Yaw Hold test with final constants 3 times
+\end{enumerate}
+
+\end{document}
