@@ -3,3 +3,4 @@
 *latexmk
 *.pdflatex_log
 *.fls
+*.out
