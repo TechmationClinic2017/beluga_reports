@@ -1,5 +1,12 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
 
 \begin{document}
 
@@ -7,9 +14,32 @@
 \Large\bf Intel NUC Setup Instructions for the Beluga AUV
 \end{center}
 
+\section*{Parts List}
+\begin{itemize}
+    \item Intel NUC (5i5ryh recommended)
+    \item SSD (Samsung 850 EVO - 250GB - M.2 SATA III Internal SSD recommended)
+    \item RAM (Crucial 16GB recommended)
+    \item USB Keyboard
+    \item USB Mouse
+    \item Monitor \& mini HDMI to HDMI cable
+    \item NUC Power Cord
+    \item USB Drive
+    \item Phillips Screwdriver
+\end{itemize}
+
 \section*{Installing Ubuntu}
+Alternative Instructions here: (\url{https://developer.ubuntu.com/core/get-started/intel-nuc})
+\begin{enumerate}
+    \item Load Ubuntu 14.04 onto a USB Drive \\ (\url{www.howtogeek.com/howto/linux/create-a-bootable-ubuntu-usb-flash-drive-the-easy-way/})
+    \item Unscrew the case off the Intel NUC
+    \item Insert the SSD and RAM as per the instructions in the Intel NUC box
+    \item Connect the monitor, keyboard, and mouse to the NUC
+    \item Connect the power cable to the NUC and press the power button
+    \item Follow the onscreen instructions to install Ubuntu 14.04
+\end{enumerate}
 
 \section*{Installing ROS}
+Once Ubuntu is installed, install ROS Indigo Igloo following these instructions: \url{http://wiki.ros.org/indigo/Installation/Ubuntu}
 
 \section*{Cloning the Beluga Repositories}
 There are two repositories to clone, one for the ROS workspace and one for the data and simulation.
