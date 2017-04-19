@@ -59,19 +59,20 @@ The following tests will be completed to validate the performance of the AUV con
 
 \subsection*{Axial Velocity}
 \begin{enumerate}
-\item Input the theoretical Axial Velocity PID Constants
-\item Set up a forward velocity only test from 0 to $0.5 m/s$ in 5 seconds.
+\item Input the theoretical Axial Velocity PID Constants (for .50 input setting)
+\item Set up a forward velocity only test from 0 to $1.0 m/s$ in 5 seconds.
 \item Run the test and process the data
 \item Evaluate the performance of the controller and qualitatively reselect PID constants
 \item Repeat steps 2-4 until controller performance is satisfactory
-\item Repeat the axial velocity test with final constants 3 times
+\item Repeat the axial velocity test with final constants 3 times (PID constants for .50 input MUST be reasonably tuned for use in remaining tests)
+\item Time permitting, repeat steps 1-6 for remaining control inputs [.25 .75 1.0] (reduce to 1 trial per input if necessary)
 \end{enumerate}
 
 
 \subsection*{Pitch}
 \begin{enumerate}
 \item Input the theoretical pitch PID Constants
-\item Set up a forward velocity only test from 0 to $45^\circ $ in 20 seconds.
+\item Set up a pitch only test from 0 to $45^\circ $ in 20 seconds.
 \item Run the test and process the data
 \item Evaluate the performance of the controller and qualitatively reselect PID constants
 \item Repeat steps 2-4 until controller performance is satisfactory
@@ -86,18 +87,18 @@ The following tests will be completed to validate the performance of the AUV con
 
 \subsection*{Velocity-Pitch-Yaw Hold}
 \begin{enumerate}
-\item Input the tuned velocity, pitch, yaw PID Constants
-\item Set up a test where forward velocity goes from  0 to $0.5 m/s$ in 5 seconds and holds the pitch at $0^\circ$ and yaw at a given angle.
+\item Input the tuned velocity, pitch, yaw PID Constants.
+\item Set up a test where forward velocity goes from 0 to $1.0 m/s$ (for consistency with tuned velocity controller) in 5 seconds and holds the pitch at $0^\circ$ and yaw at a given angle.
 \item Run the test and process the data
 \item Evaluate the performance of the controller and qualitatively reselect PID constants
-\item Repeat steps 2-4 until controller performance is satisfactory
+\item Repeat steps 2-4 until overall controller performance is satisfactory
 \item Repeat the Velocity-Pitch-Yaw Hold test with final constants 3 times
 \end{enumerate}
 
 \subsection*{Velocity-Pitch-Yaw Turn}
 \begin{enumerate}
 \item Input the tuned velocity, pitch, yaw PID Constants
-\item Set up a test where forward velocity goes from  0 to $0.5 m/s$ in 5 seconds and holds the pitch at $0^\circ$ and yaw turns $180^\circ$ in 60 seconds.
+\item Set up a test where forward velocity goes from  0 to $1.0 m/s$ in 5 seconds and holds the pitch at $0^\circ$ and yaw turns $180^\circ$ in 60 seconds (or $90^\circ$ in 30 seconds, permitting testing space).
 \item Run the test and process the data
 \item Evaluate the performance of the controller and qualitatively reselect PID constants
 \item Repeat steps 2-4 until controller performance is satisfactory
