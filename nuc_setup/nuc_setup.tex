@@ -1,5 +1,13 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
+
 \usepackage{enumitem}
 \usepackage{hyperref}
 
@@ -15,8 +23,33 @@
 \Large\bf Intel NUC Setup Instructions for the Beluga AUV
 \end{center}
 
+\section*{Parts List}
+\begin{itemize}[nosep]
+    \item Intel NUC (5i5ryh recommended)
+    \item SSD (Samsung 850 EVO - 250GB - M.2 SATA III Internal SSD recommended)
+    \item RAM (Crucial 16GB recommended)
+    \item USB Keyboard
+    \item USB Mouse
+    \item Monitor \& mini HDMI to HDMI cable
+    \item NUC Power Cord
+    \item USB Drive
+    \item Phillips Screwdriver
+\end{itemize}
+
 \section*{Installing Ubuntu}
-\todo
+Alternative Instructions here: (\url{https://developer.ubuntu.com/core/get-started/intel-nuc})
+\begin{enumerate}[nosep]
+    \item Load Ubuntu 14.04 onto a USB Drive \\ (\url{www.howtogeek.com/howto/linux/create-a-bootable-ubuntu-usb-flash-drive-the-easy-way/})
+    \item Unscrew the case off the Intel NUC
+    \item Insert the SSD and RAM as per the instructions in the Intel NUC box
+    \item Connect the monitor, keyboard, and mouse to the NUC
+    \item Connect the power cable to the NUC and press the power button
+    \item Follow the onscreen instructions to install Ubuntu 14.04
+\end{enumerate}
+
+\section*{Installing ROS}
+Once Ubuntu is installed, install ROS Indigo Igloo following these instructions: \url{http://wiki.ros.org/indigo/Installation/Ubuntu}
+
 
 \section*{Enable Auto-Reboot}
 By default the Intel NUC will not power on after being connected to power, and will wait for the power button to be pressed.
@@ -51,7 +84,8 @@ Test that this worked by opening an ssh connection from another machine using th
 
 \section*{Installing ROS}
 \todo
-To allow the NUC to send ROS messages over wifi, add the following line to your .zshrc/.bashrc \begin{verbatim}
+To allow the NUC to send ROS messages over wifi, add the following line to your .zshrc/.bashrc 
+\begin{verbatim}
 export ROS_IP=[BELUGA_STATIC_IP]
 (i.e. export ROS_IP=192.168.1.200)
 \end{verbatim}
